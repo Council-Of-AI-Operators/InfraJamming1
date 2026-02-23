@@ -1,0 +1,133 @@
+.idea-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #ddd;
+  transition: box-shadow 0.2s;
+}
+
+.idea-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.idea-card.priority-high {
+  border-left-color: #dc2626;
+}
+
+.idea-card.priority-medium {
+  border-left-color: #f59e0b;
+}
+
+.idea-card.priority-low {
+  border-left-color: #22c55e;
+}
+
+.idea-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.idea-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  flex: 1;
+}
+
+.idea-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.idea-actions button {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.idea-actions button:hover {
+  background-color: #e5e7eb;
+}
+
+.edit-button:hover {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.delete-button:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.idea-description {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.idea-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.idea-status {
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.idea-status.status-idea {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+.idea-status.status-in-progress {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.idea-status.status-completed {
+  background-color: #d1fae5;
+  color: #047857;
+}
+
+.idea-status.status-archived {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.idea-priority {
+  color: #6b7280;
+  text-transform: capitalize;
+}
+
+.idea-due-date {
+  color: #6b7280;
+}
+
+.idea-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.idea-tag {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
