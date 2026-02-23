@@ -1,8 +1,9 @@
+const { getStore } = require("@netlify/blobs");
+
 const VALID_PRIORITIES = ['low', 'medium', 'high'];
 const VALID_STATUSES = ['idea', 'in-progress', 'completed', 'archived'];
 
-let nextId = 4;
-let ideas = [
+const SEED_DATA = [
   {
     id: 1,
     title: 'Build a habit tracker with streaks',
@@ -50,10 +51,30 @@ function respond(statusCode, body) {
 }
 
 function getRoute(eventPath) {
-  // Strip function prefix or /api prefix to get the clean route
   return eventPath
     .replace(/^\/?\.netlify\/functions\/api/, '')
     .replace(/^\/api/, '');
+}
+
+async function loadIdeas(store) {
+  const raw = await store.get("ideas", { type: "json" });
+  if (!raw) {
+    await store.setJSON("ideas", SEED_DATA);
+    await store.setJSON("nextId", SEED_DATA.length + 1);
+    return SEED_DATA;
+  }
+  return raw;
+}
+
+async function saveIdeas(store, ideas) {
+  await store.setJSON("ideas", ideas);
+}
+
+async function getNextId(store) {
+  const id = await store.get("nextId", { type: "json" });
+  const nextId = id || SEED_DATA.length + 1;
+  await store.setJSON("nextId", nextId + 1);
+  return nextId;
 }
 
 exports.handler = async function (event) {
@@ -64,14 +85,16 @@ exports.handler = async function (event) {
     return { statusCode: 204, headers, body: '' };
   }
 
-  // GET /api/health
   if (route === '/health') {
     return respond(200, { status: 'ok' });
   }
 
+  const store = getStore("actionable-ideas-data");
+
   // Routes: /ideas or /ideas/
   if (route === '/ideas' || route === '/ideas/' || route === '' || route === '/') {
     if (method === 'GET') {
+      const ideas = await loadIdeas(store);
       const params = event.queryStringParameters || {};
       let filtered = [...ideas];
 
@@ -99,8 +122,11 @@ exports.handler = async function (event) {
         return respond(400, { error: 'Title is required' });
       }
 
+      const ideas = await loadIdeas(store);
+      const newId = await getNextId(store);
+
       const newIdea = {
-        id: nextId++,
+        id: newId,
         title: body.title.trim(),
         description: body.description || null,
         priority: VALID_PRIORITIES.includes(body.priority) ? body.priority : 'medium',
@@ -112,6 +138,7 @@ exports.handler = async function (event) {
       };
 
       ideas.unshift(newIdea);
+      await saveIdeas(store, ideas);
       return respond(201, newIdea);
     }
   }
@@ -120,6 +147,7 @@ exports.handler = async function (event) {
   const idMatch = route.match(/^\/ideas\/(\d+)$/);
   if (idMatch) {
     const id = parseInt(idMatch[1], 10);
+    const ideas = await loadIdeas(store);
     const index = ideas.findIndex(i => i.id === id);
 
     if (index === -1) {
@@ -145,11 +173,13 @@ exports.handler = async function (event) {
         updated_at: new Date().toISOString()
       };
 
+      await saveIdeas(store, ideas);
       return respond(200, ideas[index]);
     }
 
     if (method === 'DELETE') {
       ideas.splice(index, 1);
+      await saveIdeas(store, ideas);
       return respond(200, { message: 'Idea deleted successfully' });
     }
   }
